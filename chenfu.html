@@ -1,0 +1,230 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <title>
+      Intro to MapView - Create a 2D map | Sample | ArcGIS API for JavaScript
+      4.23
+    </title>
+    <style>
+
+      html,
+      body,
+      #viewDiv {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+      }
+.body {
+   position: relative;
+ }
+.header {
+    height: 60px;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+.header p {
+  float: left;
+  margin: 0;
+  margin-left: 100px;
+  line-height: 60px;
+  font-style: 26px;
+  font-weight: 700;
+  color: #fff;
+
+}
+#search {
+
+float: right;
+  line-height: 60px;
+  margin-top: 15px;
+}
+#basemapGalleryDiv {
+        position: absolute;
+        top:70px;
+        left: 50px;
+        height: 100%;
+        width: 200px;
+        z-index:1 ;
+      }
+#other{
+    position: absolute;
+    z-index: 1;
+    right: 0;
+    top: 20px;
+    /* top: 70%; */
+      }
+ #final{
+    height: 350px;
+    position: absolute;
+    z-index: 1;
+    left: 15%;
+    top: 70px;
+      }
+    </style>
+
+    <link
+      rel="stylesheet"
+      href="https://js.arcgis.com/4.23/esri/themes/light/main.css"
+    />
+    <script src="https://js.arcgis.com/4.23/"></script>
+
+    <script>
+      require(["esri/Map", 
+      "esri/views/MapView",
+      "esri/layers/FeatureLayer",
+      "esri/widgets/Legend",
+      "esri/widgets/ScaleBar",
+      "esri/widgets/BasemapGallery",
+      "esri/widgets/Search",
+      "esri/widgets/LayerList",
+      "esri/widgets/Editor",
+      "esri/widgets/Print"], (Map, MapView,FeatureLayer,Legend,ScaleBar,BasemapGallery,Search,LayerList,Editor,Print) => {
+        const map = new Map({
+          basemap: "topo-vector",
+        });
+        const view = new MapView({
+          container: "viewDiv",
+          map: map,
+          zoom:4,
+          center: [110, 35] // longitude, latitude
+        });
+        const featureLayer = new FeatureLayer({
+    url:  "https://www.geosceneonline.cn/server/rest/services/Hosted/2022%E5%B9%B4%E5%9C%B0%E9%9C%87/FeatureServer",
+    title: "全国地震分布",
+    popupTemplate: {
+      title: "全国地震分布",
+      lastEditInfoEnabled: false,
+      content: [
+        {
+          type: "fields",
+          fieldInfos: [
+            {
+              fieldName: "name"
+            },
+            
+            {
+              fieldName: "type"
+            }
+            
+          ]
+        }
+      ]
+    }
+
+  });
+
+   map.add(featureLayer);
+
+   const featureLayer2 = new FeatureLayer({
+    url:  "https://www.geosceneonline.cn/server/rest/services/Hosted/%E5%90%84%E7%9C%81%E5%9C%B0%E9%9C%87%E6%AC%A1%E6%95%B0/FeatureServer",
+    title: "各省地震次数",
+    popupTemplate: {
+      title: "各省地震次数",
+      lastEditInfoEnabled: false,
+      content: [
+        {
+          type: "fields",
+          fieldInfos: [
+            {
+              fieldName: "name"
+            },
+            
+            {
+              fieldName: "type"
+            }
+            
+          ]
+        }
+      ]
+    }
+
+  });
+
+   map.add(featureLayer2);
+        // 图例
+        const legend = new Legend({
+          view: view,
+          // container:"other",
+            layerInfos:[{
+                layer:featureLayer,
+                title:"全国地震分布"
+
+            }]
+          
+        });
+        view.ui.add(legend, "bottom-right");
+        // 比例尺
+        let scaleBar = new ScaleBar({
+        view: view,
+        unit: "dual",
+        style: "ruler"
+});
+        view.ui.add(scaleBar, {
+        position: "bottom-right"
+});
+        // 地图库
+        const basemapGallery = new BasemapGallery({
+          view:view,
+           container:"basemapGalleryDiv"
+        });
+//         let basemapGallery = new BasemapGallery({
+//   view: view
+// });
+// // Add widget to the top right corner of the view
+// view.ui.add(basemapGallery, {
+//   position: "top-left"
+// });
+
+        // 搜索框
+        const searchWidget = new Search({
+        view: view,
+        container:"search"
+});
+
+        // 图层列表
+        let layerList = new LayerList({
+        view: view,
+        title:"全国地震分布",
+        style:"ruler"
+});
+        view.ui.add(layerList, {
+         position: "bottom-right"
+});
+const editor = new Editor({
+  view: view
+});
+
+view.ui.add(editor, "top-right");
+
+// view.ui.add(editor, "top-right");
+const print = new Print({
+  view: view,
+  container:"final",
+  // specify your own print service
+  printServiceUrl:
+     "https://utility.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task"
+});
+
+      });
+    </script>
+  </head>
+
+  <body>
+    <header class="header">
+        <p>请看地图</p>
+        <div id="search"></div>
+    </header>
+    <div id="basemapGalleryDiv"></div>
+    <div id="viewDiv"></div>
+        <div id="other"></div>
+        <div id="final"></div>
+      
+  
+  </body>
+
+</html>
